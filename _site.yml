@@ -25,5 +25,5 @@ navbar:
       href: https://github.com/xvilaysouk      # CHANGE HERE 
 output:
   html_document:
-    theme: cosmo
+    theme: flatly
     highlight: textmate

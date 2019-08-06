@@ -1,9 +1,15 @@
 ---
 title: "Xaysackda's CV"
+output:
+  html_document:
+    theme: flatly
+    highlight: textmate
 ---
+
+```{r, out.width='15%', fig.align='left', echo=FALSE}
+knitr::include_graphics('2019-07-30.png')
+```
 
 <a href="CV.pdf#" class="download" title="Download CV as PDF">Download CV</a>			
 
-## Header
-
-Say more about your CV here.
+Please feel free to contact me!

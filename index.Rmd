@@ -2,8 +2,11 @@
 title: "Main Page for Calculation"
 author: "X.Vilaysouk"
 date: "8/6/2019"
-output: html_document
 ---
+```{r, out.width='10%', fig.align='center', echo=FALSE}
+knitr::include_graphics('2019-07-30.png')
+```
+
 #### I made the Demo to show the application of k-mean using the Iris dataset ####
 #### ທົດລອງພີມລາວ ໃນ RMarkdown ####
 
@@ -21,34 +24,33 @@ library(plotly)
 library(reshape2)
 library(factoextra)
 library(NbClust)
+library(knitr)
 ```
-
-
 
 ## The data set ##
 
-In this demo I use the Iris dataset.
+In this demo, I used the Iris dataset.
 
 #### Description #####
 
 This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
 
 ```{r}
-
 dt = iris
-
+kable(head(iris))
 p1 <- ggplot(data = dt, aes(x=Petal.Width,y=Petal.Length, color = Species))+geom_point()+
   labs(title = "Original Dataset")
-p1
+ggplotly(p1)
 ```
 
-## 1 Run k-mean unsupervised learning algorithm using the Petal length and Petal Width as the input data for clustering
+
+# 1. Run k-mean unsupervised learning algorithm using the Petal length and Petal Width as the input data for clustering
 
 ```{r}
 dt.kmean <- dt %>% select(Petal.Width,Petal.Length) #select the data for clustering
-fviz_nbclust(dt.kmean,kmeans, method = "wss") + labs(subtitle = "Elbow method")
+ggplotly(fviz_nbclust(dt.kmean,kmeans, method = "wss") + labs(subtitle = "Elbow method"))
 ```
-+ from the optimization we found that 3 is the best number for cluster in this dataset
+- From the optimization we found that *3* is the best number for cluster in this dataset
 ```{r}
 set.seed(619)
 k_mean <- kmeans(dt.kmean,3, nstart = 30)
@@ -56,7 +58,7 @@ k_mean <- kmeans(dt.kmean,3, nstart = 30)
 dt_plot <- cbind(dt,k_mean$cluster)
 p2 <- ggplot(data = dt_plot, aes(x=Petal.Width,y=Petal.Length, color = factor(k_mean$cluster)))+geom_point()+
   labs(title = "Results from k-mean", color = "cluster from k-mean")
-p2
+ggplotly(p2)
 ```
 
 ## Comparing the species from orginal dataset and species obtained from k-mean 
@@ -65,12 +67,12 @@ p2
 grid.arrange(p1,p2, nrow = 1)
 ```
 
-## 2 Run k-mean unsupervised learning algorithm using Sepal length and Width as the input data for clustering
-
+# 2. Run k-mean unsupervised learning algorithm using Sepal length and Width as the input data for clustering
+We plot the data from the original dataset.
 ```{r}
 p3 <- ggplot(data = dt, aes(x=Sepal.Width,y=Sepal.Length, color = Species))+geom_point()+
   labs(title = "Original Dataset")
-p3
+ggplotly(p3)
 
 dt.kmean <- dt %>% select(Sepal.Width,Sepal.Length)
 set.seed(619)
@@ -79,7 +81,7 @@ k_mean <- kmeans(dt.kmean,3, nstart = 30)
 dt_plot <- cbind(dt,k_mean$cluster)
 p4 <- ggplot(data = dt_plot, aes(x=Sepal.Width,y=Sepal.Length, color = factor(k_mean$cluster)))+geom_point()+
   labs(title = "Results from k-mean", color = "cluster from k-mean")
-p4
+ggplotly(p4)
 ```
 
 ## Comparing the species from orginal dataset and species obtained from k-mean 
@@ -89,60 +91,54 @@ grid.arrange(p3,p4, nrow = 1)
 grid.arrange(p1,p2,p3,p4, nrow = 2)
 ```
 
-## Testing with the real dataset
+## Testing with the realworld dataset: Material Intensity Parameters of the residential building 
 
 + In this demo, I used the dataset of material intensity of the building comprised by Heeren, N. and T. Fishman (2019), which could be found at https://github.com/nheeren/material_intensity_db.
 
 ### Following is the original dataset ###
 
-```{r,results = 'hide'}
+```{r,results = 'hide', warning= FALSE, message= FALSE}
 library(RCurl)
 git.url <- getURL("https://raw.githubusercontent.com/nheeren/material_intensity_db/master/data/buildings.csv")
 mi.data <- read.csv(text = git.url)
 ```
 + Example of the dataset
-```{r}
-mi.data[1:10,2:10]
+```{r, warning= FALSE, message= FALSE}
+kable(mi.data[1:5,2:10])
 ```
 
 - I have modified the original dataset by adding additional parameters such as material categories metal_based, biomass_based, construction_mineral and other_minerals.
 
-```{r, results = 'hide'}
+```{r, results = 'hide', warning= FALSE, message= FALSE}
 msiinR <- read_excel("./data/msiinR.xlsx") ## @mainfile for MI modified from github
 ```
 
-```{r}
-msiinR[1:10,3:10]
+```{r, warning= FALSE, message= FALSE}
+kable(msiinR[1:10,3:10])
 ```
 
-### This is the MI from the modified dataset ###
+### This is the ploting of MI parameters from the modified dataset without building class types ###
 
 ```{r, results = "hide", message=FALSE}
 mi_all <- msiinR %>% dplyr::select(construction_period_end,other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,Country)%>%
   filter(construction_period_end >0)
-```
 
-```{r, message=FALSE}
 #plot the MI by year and main selected material categories#
 p_mi_1 <- mi_all %>% melt(id = c("construction_period_end","Country")) %>% ggplot(aes(x=construction_period_end,y=value,color=variable))+ geom_point()+ geom_smooth(method = "lm")
-p_mi_1
+ggplotly(p_mi_1)
 ```
 
-```{r}
+```{r, warning = FALSE, message=FALSE}
 #plot the MI by year and countries#
 p_mi_2 <- mi_all %>% melt(id = c("construction_period_end","Country")) %>% ggplot(aes(x=construction_period_end,y=value,color=Country))+ geom_point()+ geom_smooth(method = "lm")
-p_mi_2
+ggplotly(p_mi_2)
 ```
 
-```{r,warning = FALSE}
-grid.arrange(p_mi_1, p_mi_2, nrow = 2)
-```
-
-# Kmean Clustering #
+# Conducting the K-mean Clustering of the MI dataset #
 
 + Prepare and clean the dataframe for analysis
 
-```{r, warning= F}
+```{r, warning = FALSE, message=FALSE}
 msi.res.only <- msiinR %>% filter(Occupation == "residential") ## @ filter only residential building
 ## select main materials categories ##
 data_for_kmean <- msi.res.only %>% dplyr::select(metal_based,biomass_based,construction_mineral,other_minerals,brick,concrete,aggregates,TotalMSI)
@@ -150,16 +146,16 @@ data_for_kmean <- msi.res.only %>% dplyr::select(metal_based,biomass_based,const
 data_for_kmean[is.na(data_for_kmean)] <- 0
 ```
 
-+ find the number of cluster using elbow method
++ Find the number of cluster using elbow method
 Partitioning methods, such as k-means clustering require the users to specify the number of clusters to be generated.
 Thus, I use the Elbow method
 ```{r, warning= F}
 #### Determine the number of k clustering ####
-fviz_nbclust(data_for_kmean,kmeans, method = "wss") + labs(subtitle = "Elbow Method")
+ggplotly(fviz_nbclust(data_for_kmean,kmeans, method = "wss") + labs(subtitle = "Elbow Method"))
 ```
 
 ```{r, warning= F}
-## run for difference k value ##
+## run clustering for difference k values ##
 set.seed(1)
 k4 <- kmeans(data_for_kmean, 4, nstart = 30) ## k = 4
 set.seed(1)
@@ -177,10 +173,18 @@ p2 <- fviz_cluster(k5, geom = "point" , data_for_kmean) + ggtitle("k=5")
 p3 <- fviz_cluster(k6, geom = "point" , data_for_kmean) + ggtitle("k=6")
 p4 <- fviz_cluster(k7, geom = "point" , data_for_kmean) + ggtitle("k=7")
 
+ggplotly(p1)
+ggplotly(p2)
+ggplotly(p3)
+ggplotly(p4)
+
 plot_clus_1st <- grid.arrange(p1,p2,p3,p4)
+
 ```
 
-- summarise data and crete the report results dataset 
+From the results of the clustering, we clearly see that the cluster number 1 in the k=7 figure is the unique group, which is identified as the outliners in this study.
+
+- Summarise data and crete the report results dataset 
 ```{r, warning= F}
 set.seed(1)
 k_final <- kmeans(data_for_kmean, 7, nstart = 30) ## @choose k value based on the optimal result
@@ -198,10 +202,8 @@ k_final_selected_data <- k_final_data %>% dplyr::select(Country,building_descrip
 final <- k_final_data
 ```
 
-
-
 ```{r, message=FALSE, warning= F}
-dt <- final %>% dplyr::select(construction_period_end,other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,cluster.id)%>%
+dt <- final %>% dplyr::filter(cluster.id >1) %>% dplyr::select(construction_period_end,other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,cluster.id)%>%
   filter(construction_period_end >0)
 
 colnames(dt)[1] <- "year"
@@ -211,18 +213,23 @@ dt.sum <- dt.melt %>% group_by(year,cluster.id,variable) %>% summarise(value = m
 
 plot_by_cluster <- dt.sum %>% ggplot(aes(x = year, y = value, color = factor(variable))) + geom_point()+
   geom_smooth(method = "lm")+ facet_wrap(.~ cluster.id)#,scales = "free")
-plot_by_cluster
+ggplotly(plot_by_cluster)
 ```
+
+* Note: Cluster number 2-Wood, 3-RC,Brick, 4-RC(EU), 5-RC,Wood, 6-RC(Asia), 7-Brick(EU)
+
 
 ```{r, message=FALSE, warning= F}
 # Plot the histogram of MI for all clusters
 fit.msi.dat <- final %>%  dplyr::select(other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,Country,cluster.id)
 
-fit.msi.dat %>% melt() %>% ggplot(aes(x=value))+geom_histogram(aes(y=..density..,fill=..count..), alpha=.75) +
+plot.ly <- fit.msi.dat %>% melt() %>% ggplot(aes(x=value))+geom_histogram(aes(y=..density..,fill=..count..), alpha=.75) +
   geom_density(aes(color = "red"))+
   facet_wrap(.~ variable, scales = "free")+
   scale_fill_gradient("Count", low = "blue", high = "red")+
   guides(color = F)
+
+ggplotly(plot.ly )
 ```
 
 

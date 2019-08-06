@@ -1,7 +1,12 @@
 ---
 title: "About me"
+output:
+  html_document:
+    theme: flatly
+    highlight: textmate
 ---
 
-## Header
-
-Say more about you here.
+## Under Construction ##
+```{r, out.width='10%', fig.align='left', echo=FALSE}
+knitr::include_graphics('2019-07-30.png')
+```
