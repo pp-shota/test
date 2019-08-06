@@ -1,7 +1,7 @@
-name: "YOURNAME"                                # CHANGE HERE 
+name: "Xaysackda Vilaysouk RMarkdown"                                # CHANGE HERE 
 output_dir: "."
 navbar:
-  title: "YOURNAME"                             # CHANGE HERE 
+  title: "X.Vilaysouk"                             # CHANGE HERE 
   type: inverse
   left:
     - text: "Home"
@@ -13,16 +13,16 @@ navbar:
     - text: "CV"
       icon: fa-file-pdf-o
       href: cv.html
-    - text: "Blog"
-      icon: fa-rss
-      href: https://YOURGITHUB.github.io/blog/  # CHANGE HERE OR DELETE ALL 3 LINES 
   right:
     - text: "Contact me"
       icon: fa-envelope-o
-      href: mailto:YOUREMAIL                    # CHANGE HERE 
+      href: mailto:xaysackda.vls@gmail.com                   # CHANGE HERE 
+    - text: "Google Scholar"
+      icon: fa-graduation-cap
+      href: https://scholar.google.co.jp/citations?hl=en&user=uFI9dkMAAAAJ      # CHANGE HERE 
     - text: "GitHub"
       icon: fa-github
-      href: https://github.com/YOURGITHUB       # CHANGE HERE 
+      href: https://github.com/xvilaysouk      # CHANGE HERE 
 output:
   html_document:
     theme: cosmo
