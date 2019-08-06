@@ -9,9 +9,10 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="X.Vilaysouk" />
 
 
-<title>Welcome to my website!</title>
+<title>Main Page for Calculation</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -338,12 +339,241 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Welcome to my website!</h1>
+<h1 class="title toc-ignore">Main Page for Calculation</h1>
+<h4 class="author">X.Vilaysouk</h4>
+<h4 class="date">8/6/2019</h4>
 
 </div>
 
 
-<p>You’re up and running!</p>
+<div id="i-made-the-demo-to-show-the-application-of-k-mean-using-the-iris-dataset" class="section level4">
+<h4>I made the Demo to show the application of k-mean using the Iris dataset</h4>
+</div>
+<div id="rmarkdown" class="section level4">
+<h4>ທົດລອງພີມລາວ ໃນ RMarkdown</h4>
+</div>
+<div id="load-all-requried-library" class="section level2">
+<h2>Load all requried library</h2>
+<p>The library is the set of functions that we need to use within R</p>
+<pre class="r"><code>library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(gridExtra)
+library(shiny)
+library(plotly)
+library(reshape2)
+library(factoextra)
+library(NbClust)</code></pre>
+</div>
+<div id="the-data-set" class="section level2">
+<h2>The data set</h2>
+<p>In this demo I use the Iris dataset.</p>
+<div id="description" class="section level4">
+<h4>Description</h4>
+<p>This famous (Fisher’s or Anderson’s) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.</p>
+<pre class="r"><code>dt = iris
+
+p1 &lt;- ggplot(data = dt, aes(x=Petal.Width,y=Petal.Length, color = Species))+geom_point()+
+  labs(title = &quot;Original Dataset&quot;)
+p1</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="run-k-mean-unsupervised-learning-algorithm-using-the-petal-length-and-petal-width-as-the-input-data-for-clustering" class="section level2">
+<h2>1 Run k-mean unsupervised learning algorithm using the Petal length and Petal Width as the input data for clustering</h2>
+<pre class="r"><code>dt.kmean &lt;- dt %&gt;% select(Petal.Width,Petal.Length) #select the data for clustering
+fviz_nbclust(dt.kmean,kmeans, method = &quot;wss&quot;) + labs(subtitle = &quot;Elbow method&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /> + from the optimization we found that 3 is the best number for cluster in this dataset</p>
+<pre class="r"><code>set.seed(619)
+k_mean &lt;- kmeans(dt.kmean,3, nstart = 30)
+
+dt_plot &lt;- cbind(dt,k_mean$cluster)
+p2 &lt;- ggplot(data = dt_plot, aes(x=Petal.Width,y=Petal.Length, color = factor(k_mean$cluster)))+geom_point()+
+  labs(title = &quot;Results from k-mean&quot;, color = &quot;cluster from k-mean&quot;)
+p2</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="comparing-the-species-from-orginal-dataset-and-species-obtained-from-k-mean" class="section level2">
+<h2>Comparing the species from orginal dataset and species obtained from k-mean</h2>
+<pre class="r"><code>grid.arrange(p1,p2, nrow = 1)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="run-k-mean-unsupervised-learning-algorithm-using-sepal-length-and-width-as-the-input-data-for-clustering" class="section level2">
+<h2>2 Run k-mean unsupervised learning algorithm using Sepal length and Width as the input data for clustering</h2>
+<pre class="r"><code>p3 &lt;- ggplot(data = dt, aes(x=Sepal.Width,y=Sepal.Length, color = Species))+geom_point()+
+  labs(title = &quot;Original Dataset&quot;)
+p3</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>dt.kmean &lt;- dt %&gt;% select(Sepal.Width,Sepal.Length)
+set.seed(619)
+k_mean &lt;- kmeans(dt.kmean,3, nstart = 30)
+
+dt_plot &lt;- cbind(dt,k_mean$cluster)
+p4 &lt;- ggplot(data = dt_plot, aes(x=Sepal.Width,y=Sepal.Length, color = factor(k_mean$cluster)))+geom_point()+
+  labs(title = &quot;Results from k-mean&quot;, color = &quot;cluster from k-mean&quot;)
+p4</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+<div id="comparing-the-species-from-orginal-dataset-and-species-obtained-from-k-mean-1" class="section level2">
+<h2>Comparing the species from orginal dataset and species obtained from k-mean</h2>
+<pre class="r"><code>grid.arrange(p3,p4, nrow = 1)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>grid.arrange(p1,p2,p3,p4, nrow = 2)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+</div>
+<div id="testing-with-the-real-dataset" class="section level2">
+<h2>Testing with the real dataset</h2>
+<ul>
+<li>In this demo, I used the dataset of material intensity of the building comprised by Heeren, N. and T. Fishman (2019), which could be found at <a href="https://github.com/nheeren/material_intensity_db" class="uri">https://github.com/nheeren/material_intensity_db</a>.</li>
+</ul>
+<div id="following-is-the-original-dataset" class="section level3">
+<h3>Following is the original dataset</h3>
+<pre class="r"><code>library(RCurl)</code></pre>
+<pre><code>## Loading required package: bitops</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RCurl&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     complete</code></pre>
+<pre class="r"><code>git.url &lt;- getURL(&quot;https://raw.githubusercontent.com/nheeren/material_intensity_db/master/data/buildings.csv&quot;)
+mi.data &lt;- read.csv(text = git.url)</code></pre>
+<ul>
+<li>Example of the dataset</li>
+</ul>
+<pre class="r"><code>mi.data[1:10,2:10]</code></pre>
+<pre><code>##    Country Region construction_period_start construction_period_end
+## 1  Austria Vienna                        NA                    1918
+## 2  Austria Vienna                        NA                    1918
+## 3  Austria Vienna                        NA                    1918
+## 4  Austria Vienna                        NA                    1918
+## 5  Austria Vienna                        NA                    1918
+## 6  Austria Vienna                        NA                    1918
+## 7  Austria Vienna                        NA                    1918
+## 8  Austria Vienna                        NA                    1918
+## 9  Austria Vienna                        NA                    1918
+## 10 Austria Vienna                        NA                    1918
+##        steel    copper   aluminum unspecified_metal     wood
+## 1   3.414460 0.1628582 0.47809053        0.18171365 68.17187
+## 2   8.300614 0.2421979 0.07332111        0.03097744 89.49143
+## 3  15.273336 0.2001163 0.06058164        0.02559514 68.39522
+## 4  11.111311 0.2569017 0.07777240        0.03285807 48.21288
+## 5  11.292124 0.2661166 0.32976127        0.03403667 32.39746
+## 6  19.909349 0.2171249 0.06573071        0.02777057 46.84368
+## 7   8.157953 0.2178407 0.06594740        0.02786212 22.84301
+## 8   7.111178 0.2214064 0.06702685        0.02831818 75.28328
+## 9  10.424038 0.2689137 0.21109662        0.03439442 68.69549
+## 10  8.504805 0.2110020 0.06387710        0.02698744 34.09962</code></pre>
+<ul>
+<li>I have modified the original dataset by adding additional parameters such as material categories metal_based, biomass_based, construction_mineral and other_minerals.</li>
+</ul>
+<pre class="r"><code>msiinR &lt;- read_excel(&quot;./data/msiinR.xlsx&quot;) ## @mainfile for MI modified from github</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...1</code></pre>
+<pre class="r"><code>msiinR[1:10,3:10]</code></pre>
+<pre><code>## # A tibble: 10 x 8
+##    Country Region construction_pe~ construction_pe~ steel copper aluminum
+##    &lt;chr&gt;   &lt;chr&gt;             &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Austria Vien0                 0             1918  3.41  0.163   0.478 
+##  2 Austria Vien0                 0             1918  8.30  0.242   0.0733
+##  3 Austria Vien0                 0             1918 15.3   0.200   0.0606
+##  4 Austria Vien0                 0             1918 11.1   0.257   0.0778
+##  5 Austria Vien0                 0             1918 11.3   0.266   0.330 
+##  6 Austria Vien0                 0             1918 19.9   0.217   0.0657
+##  7 Austria Vien0                 0             1918  8.16  0.218   0.0659
+##  8 Austria Vien0                 0             1918  7.11  0.221   0.0670
+##  9 Austria Vien0                 0             1918 10.4   0.269   0.211 
+## 10 Austria Vien0                 0             1918  8.50  0.211   0.0639
+## # ... with 1 more variable: unspecified_metal &lt;dbl&gt;</code></pre>
+</div>
+<div id="this-is-the-mi-from-the-modified-dataset" class="section level3">
+<h3>This is the MI from the modified dataset</h3>
+<pre class="r"><code>mi_all &lt;- msiinR %&gt;% dplyr::select(construction_period_end,other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,Country)%&gt;%
+  filter(construction_period_end &gt;0)</code></pre>
+<pre class="r"><code>#plot the MI by year and main selected material categories#
+p_mi_1 &lt;- mi_all %&gt;% melt(id = c(&quot;construction_period_end&quot;,&quot;Country&quot;)) %&gt;% ggplot(aes(x=construction_period_end,y=value,color=variable))+ geom_point()+ geom_smooth(method = &quot;lm&quot;)
+p_mi_1</code></pre>
+<pre><code>## Warning: Removed 349 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>## Warning: Removed 349 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>#plot the MI by year and countries#
+p_mi_2 &lt;- mi_all %&gt;% melt(id = c(&quot;construction_period_end&quot;,&quot;Country&quot;)) %&gt;% ggplot(aes(x=construction_period_end,y=value,color=Country))+ geom_point()+ geom_smooth(method = &quot;lm&quot;)
+p_mi_2</code></pre>
+<pre><code>## Warning: Removed 349 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>## Warning: Removed 349 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>grid.arrange(p_mi_1, p_mi_2, nrow = 2)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+</div>
+<div id="kmean-clustering" class="section level1">
+<h1>Kmean Clustering</h1>
+<ul>
+<li>Prepare and clean the dataframe for analysis</li>
+</ul>
+<pre class="r"><code>msi.res.only &lt;- msiinR %&gt;% filter(Occupation == &quot;residential&quot;) ## @ filter only residential building
+## select main materials categories ##
+data_for_kmean &lt;- msi.res.only %&gt;% dplyr::select(metal_based,biomass_based,construction_mineral,other_minerals,brick,concrete,aggregates,TotalMSI)
+## fill NA with 0, to avoid error in k mean clustering ##
+data_for_kmean[is.na(data_for_kmean)] &lt;- 0</code></pre>
+<ul>
+<li>find the number of cluster using elbow method Partitioning methods, such as k-means clustering require the users to specify the number of clusters to be generated. Thus, I use the Elbow method</li>
+</ul>
+<pre class="r"><code>#### Determine the number of k clustering ####
+fviz_nbclust(data_for_kmean,kmeans, method = &quot;wss&quot;) + labs(subtitle = &quot;Elbow Method&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>## run for difference k value ##
+set.seed(1)
+k4 &lt;- kmeans(data_for_kmean, 4, nstart = 30) ## k = 4
+set.seed(1)
+k5 &lt;- kmeans(data_for_kmean, 5, nstart = 30) ## k = 5
+set.seed(1)
+k6 &lt;- kmeans(data_for_kmean, 6, nstart = 30) ## k = 6
+set.seed(1)
+k7 &lt;- kmeans(data_for_kmean, 7, nstart = 30) ## k = 7</code></pre>
+<pre class="r"><code>## plot clustering ##
+p1 &lt;- fviz_cluster(k4, geom = &quot;point&quot; , data_for_kmean) + ggtitle(&quot;k=4&quot;)
+p2 &lt;- fviz_cluster(k5, geom = &quot;point&quot; , data_for_kmean) + ggtitle(&quot;k=5&quot;)
+p3 &lt;- fviz_cluster(k6, geom = &quot;point&quot; , data_for_kmean) + ggtitle(&quot;k=6&quot;)
+p4 &lt;- fviz_cluster(k7, geom = &quot;point&quot; , data_for_kmean) + ggtitle(&quot;k=7&quot;)
+
+plot_clus_1st &lt;- grid.arrange(p1,p2,p3,p4)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<ul>
+<li>summarise data and crete the report results dataset</li>
+</ul>
+<pre class="r"><code>set.seed(1)
+k_final &lt;- kmeans(data_for_kmean, 7, nstart = 30) ## @choose k value based on the optimal result
+k_final_data &lt;- cbind(msi.res.only,k_final$cluster) ## @bind cluster class into msi.res.only dataset
+colnames(k_final_data)[82] &lt;- &quot;cluster.id&quot; ## @change variable name ##
+
+k_final_selected_data &lt;- k_final_data %&gt;% dplyr::select(Country,building_description,82,metal_based,biomass_based,construction_mineral,other_minerals,brick,concrete,aggregates,TotalMSI)</code></pre>
+</div>
+<div id="final-results" class="section level1">
+<h1>Final Results</h1>
+<pre class="r"><code>#Data file for final results#
+final &lt;- k_final_data</code></pre>
+<pre class="r"><code>dt &lt;- final %&gt;% dplyr::select(construction_period_end,other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,cluster.id)%&gt;%
+  filter(construction_period_end &gt;0)
+
+colnames(dt)[1] &lt;- &quot;year&quot;
+
+dt.melt &lt;- dt %&gt;% melt(id = c(&quot;year&quot;,&quot;cluster.id&quot;))
+dt.sum &lt;- dt.melt %&gt;% group_by(year,cluster.id,variable) %&gt;% summarise(value = mean(value))
+
+plot_by_cluster &lt;- dt.sum %&gt;% ggplot(aes(x = year, y = value, color = factor(variable))) + geom_point()+
+  geom_smooth(method = &quot;lm&quot;)+ facet_wrap(.~ cluster.id)#,scales = &quot;free&quot;)
+plot_by_cluster</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code># Plot the histogram of MI for all clusters
+fit.msi.dat &lt;- final %&gt;%  dplyr::select(other_minerals,metal_based,biomass_based,construction_mineral,wood,brick,concrete,aggregates,TotalMSI,Country,cluster.id)
+
+fit.msi.dat %&gt;% melt() %&gt;% ggplot(aes(x=value))+geom_histogram(aes(y=..density..,fill=..count..), alpha=.75) +
+  geom_density(aes(color = &quot;red&quot;))+
+  facet_wrap(.~ variable, scales = &quot;free&quot;)+
+  scale_fill_gradient(&quot;Count&quot;, low = &quot;blue&quot;, high = &quot;red&quot;)+
+  guides(color = F)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+</div>
 
 
 
